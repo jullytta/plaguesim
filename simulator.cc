@@ -4,22 +4,56 @@
 
 using namespace std;
 
-/*class Edge {
+struct Edge {
     int dest;
 
-    public:
-        Edge() {};
-        Edge(int d): dest(d) {};
+    Edge() {};
+    Edge(int d): dest(d) {};
 };
 
-class Node {
+struct Node {
     int id, status;
-    vector<Edge> connection;
+    vector<Edge> edge;
 
-    public:
-        Node() {};
-        Node(int i, int s): id(i), status(s) {};
-};*/
+    Node() {};
+    Node(int i, int s): id(i), status(s) {};
+};
+
+struct Graph {
+    vector<Node> node;
+
+    Graph() {};
+    Graph(int n, int type): node(vector<Node>(n)) {
+        if (type == 1) {
+            for (int i = 0; i < n; i++) {
+                node[i] = Node(i, 0);
+            }
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (i != j) {
+                        node[i].edge.push_back(Edge(j));
+                    }
+                }
+            }
+        }
+    };
+
+    void printAdjacencyMatrix() {
+        for (unsigned int i = 0; i < node.size(); i++) {
+            unsigned int cur = 0;
+            for (unsigned int j = 0; j < node.size(); j++) {
+                if (cur < node[i].edge.size() && node[i].edge[cur].dest == j) {
+                    cout << "1 ";
+                    cur++;
+                }
+                else {
+                    cout << "0 ";
+                }
+            }
+            cout << endl;
+        }
+    }
+};
 
 struct Data {
     bool set;
@@ -117,6 +151,15 @@ Data runUI(Data oldParam) {
     return newParam;
 }
 
+void runSimulation(Data parameters) {
+    Graph graph;
+
+    for (int pop = parameters.minPop; pop <= parameters.maxPop; pop += parameters.increment) {
+        graph = Graph(pop, parameters.type);
+        graph.printAdjacencyMatrix();
+    }
+}
+
 int main (int argc, char** argv) {
     Data parameters;
 
@@ -130,6 +173,7 @@ int main (int argc, char** argv) {
     }
     
     parameters = runUI(parameters);
+    runSimulation(parameters);
 
     return 0;
 }
