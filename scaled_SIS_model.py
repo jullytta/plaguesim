@@ -28,6 +28,10 @@ def main():
   x = np.zeros([N, 1], dtype=np.int_)
   x_t = np.transpose(x)
 
+  result = np.matmul(A, x)
+  result = np.matmul(x_t, result)
+  print(result)
+
 
 if __name__ == '__main__':
   main()
