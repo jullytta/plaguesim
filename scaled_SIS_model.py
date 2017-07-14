@@ -24,6 +24,10 @@ def main():
   # pi[i] is the stationary distribution
   pi = np.zeros([N], dtype=np.float_)
 
+  # Current configuration
+  x = np.zeros([N, 1], dtype=np.int_)
+  x_t = np.transpose(x)
+
 
 if __name__ == '__main__':
   main()
