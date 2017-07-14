@@ -1,9 +1,10 @@
 #include <iostream>
+#include <string>
 #include <vector>
 
 using namespace std;
 
-class Edge {
+/*class Edge {
     int dest;
 
     public:
@@ -18,12 +19,12 @@ class Node {
     public:
         Node() {};
         Node(int i, int s): id(i), status(s) {};
-};
+};*/
 
 struct Data {
     bool set;
     double gamma;
-    int minPop, maxPop, increment, repeats;
+    int minPop, maxPop, increment, repeats, type;
 
     Data() {
         set = false;
@@ -32,6 +33,20 @@ struct Data {
         maxPop = 30;
         increment = 5;
         repeats = 100;
+        type = 1;
+    }
+
+    string printGraphType() {
+        if (type == 1) {
+            return "Clique";
+        }
+        else if (type == 2) {
+            return "Star";
+        }
+        else if (type == 3) {
+            return "Circular";
+        }
+        return "Custom";
     }
 };
 
@@ -50,6 +65,7 @@ Data runUI(Data oldParam) {
         cout << "[M]aximum Population = " << newParam.maxPop << endl;
         cout << "[I]ncrement = " << newParam.increment << endl;
         cout << "[N]umber of Simulations per Population Size = " << newParam.repeats << endl;
+        cout << "Graph [T]ype = " << newParam.printGraphType() << endl;
         cout << "[R]un the Simulation" << endl << endl;
 
         cout << "Select an option: ";
@@ -86,6 +102,12 @@ Data runUI(Data oldParam) {
             case 'R':
                 cout << "The simulation will start now." << endl;
                 break;
+            case 'T':
+                cout << "[1]. Clique" << endl;
+                cout << "[2]. Star" << endl;
+                cout << "[3]. Circular" << endl; 
+                cout << "Please select a preset graph type for the simulation: ";
+                cin >> newParam.type;
             default:
                 cout << "Invalid command." << endl;
         }
@@ -97,7 +119,7 @@ Data runUI(Data oldParam) {
 
 int main (int argc, char** argv) {
     Data parameters;
-    
+
     if (argc == 6) {
         parameters.set = true;
         parameters.gamma = atof(argv[1]);
