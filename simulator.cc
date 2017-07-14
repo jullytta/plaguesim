@@ -95,9 +95,18 @@ Data runUI(Data oldParam) {
     return newParam;
 }
 
-int main () {
+int main (int argc, char** argv) {
     Data parameters;
-
+    
+    if (argc == 6) {
+        parameters.set = true;
+        parameters.gamma = atof(argv[1]);
+        parameters.minPop = atoi(argv[2]);
+        parameters.maxPop = atoi(argv[3]);
+        parameters.increment = atoi(argv[4]);
+        parameters.repeats = atoi(argv[5]);
+    }
+    
     parameters = runUI(parameters);
 
     return 0;
