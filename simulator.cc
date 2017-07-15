@@ -57,12 +57,14 @@ struct Graph {
 
 struct Data {
     bool set;
-    double gamma;
+    double gamma, mu, C;
     int minPop, maxPop, increment, repeats, type;
 
     Data() {
         set = false;
         gamma = 1.0;
+        mu = 1.0;
+        C = 1.0;
         minPop = 5;
         maxPop = 30;
         increment = 5;
@@ -91,25 +93,39 @@ Data runUI(Data oldParam) {
     if (oldParam.set == true) {
         newParam = oldParam;
     }
+    newParam.set = true;
 
     while (option != 'R') {
         cout << "Welcome to PlagueSim. Please set your parameters before starting the simulation." << endl;
-        cout << "[G]amma = " << newParam.gamma << endl;
+        cout << "[E]ndogenous Infection Rate = " << newParam.gamma << endl;
+        cout << "[T]otal Exogenous Infection Rate = " << newParam.C << endl;
+        cout << "[C]ure Rate = " << newParam.mu << endl;
         cout << "[S]tarting Population = " << newParam.minPop << endl;
         cout << "[M]aximum Population = " << newParam.maxPop << endl;
         cout << "[I]ncrement = " << newParam.increment << endl;
         cout << "[N]umber of Simulations per Population Size = " << newParam.repeats << endl;
-        cout << "Graph [T]ype = " << newParam.printGraphType() << endl;
+        cout << "[G]raph Type = " << newParam.printGraphType() << endl;
         cout << "[R]un the Simulation" << endl << endl;
 
         cout << "Select an option: ";
         cin >> option;
 
         switch (option) {
-            case 'G':
-                cout << "Gamma is the exogenous infection rate." << endl;
-                cout << "Please set a new value for Gamma: ";
+            case 'E':
+                cout << "This is the rate that nodes infect each other." << endl;
+                cout << "Please set a new value for Endogenous Infection: ";
                 cin >> newParam.gamma;
+                break;
+            case 'T':
+                cout << "This is the total rate that nodes get infected." << endl;
+                cout << "Node infection rate will be this value divided by the population." << endl;
+                cout << "Please set a new value for the Exogenous Infection: ";
+                cin >> newParam.C;
+                break;
+            case 'C':
+                cout << "This is the rate that nodes cure themselves from infection." << endl;
+                cout << "Please set a new value for Cure Rate: ";
+                cin >> newParam.mu;
                 break;
             case 'S':
                 cout << "Starting Population is the smallest population size that will be simulated." << endl;
@@ -136,7 +152,7 @@ Data runUI(Data oldParam) {
             case 'R':
                 cout << "The simulation will start now." << endl;
                 break;
-            case 'T':
+            case 'G':
                 cout << "[1]. Clique" << endl;
                 cout << "[2]. Star" << endl;
                 cout << "[3]. Circular" << endl; 
@@ -156,20 +172,25 @@ void runSimulation(Data parameters) {
 
     for (int pop = parameters.minPop; pop <= parameters.maxPop; pop += parameters.increment) {
         graph = Graph(pop, parameters.type);
-        graph.printAdjacencyMatrix();
+        
+        for (int curRepeat = 0; curRepeat < parameters.repeats; curRepeat++) {
+
+        }
     }
 }
 
 int main (int argc, char** argv) {
     Data parameters;
 
-    if (argc == 6) {
+    if (argc == 8) {
         parameters.set = true;
         parameters.gamma = atof(argv[1]);
-        parameters.minPop = atoi(argv[2]);
-        parameters.maxPop = atoi(argv[3]);
-        parameters.increment = atoi(argv[4]);
-        parameters.repeats = atoi(argv[5]);
+        parameters.C = atof(argv[2]);
+        parameters.mu = atof(argv[3]);
+        parameters.minPop = atoi(argv[4]);
+        parameters.maxPop = atoi(argv[5]);
+        parameters.increment = atoi(argv[6]);
+        parameters.repeats = atoi(argv[7]);
     }
     
     parameters = runUI(parameters);
