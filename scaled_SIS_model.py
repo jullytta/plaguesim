@@ -35,8 +35,15 @@ def get_configuration_vector(N, i):
 
 
 def main():
+  # TODO(jullytta): the following should become parameters
   # The population size.
   N = 3
+  # The cure rate
+  mu = 1
+  # The exogenous infection rate
+  lambda_ = 1/N
+  # The endogenous infection rate
+  gamma = 1
 
   # The number of different configurations our system
   # can assume. Each node can be either susceptible (0)
@@ -59,6 +66,7 @@ def main():
   one_t = np.ones([1, N], dtype=np.int_)
 
   # TODO(jullytta): This is where the for loop should start
+  # Even better, make it into a function
   # Current configuration
   i = 4
 
@@ -71,10 +79,13 @@ def main():
   # Number of edges where both ends are infected
   n_infected_edges = np.matmul(np.matmul(x_t, A), x)[0, 0]//2
 
+  pi[i] = pow((lambda_/mu), n_infected[i])*pow(gamma, n_infected_edges)
+
   # Print stats
   print("# of nodes: ", N)
   print("# of configurations: ", n_configs)
   print("Current configuration: ", x_t)
+  print("Partial pi: ", pi[i])
   print("# of infected nodes: ", n_infected[i])
   print("# of infected edges: ", n_infected_edges)
 
