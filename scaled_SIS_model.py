@@ -68,11 +68,15 @@ def main():
   # Number of infected nodes in this configuration
   n_infected[i] = np.matmul(one_t, x)[0, 0]
 
+  # Number of edges where both ends are infected
+  n_infected_edges = np.matmul(np.matmul(x_t, A), x)[0, 0]//2
+
   # Print stats
   print("# of nodes: ", N)
   print("# of configurations: ", n_configs)
   print("Current configuration: ", x_t)
   print("# of infected nodes: ", n_infected[i])
+  print("# of infected edges: ", n_infected_edges)
 
 
 if __name__ == '__main__':
