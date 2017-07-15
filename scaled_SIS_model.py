@@ -13,7 +13,6 @@ def get_clique(N):
   return clique
 
 
-################################################################
 # We define a configuration as a state the system can assume.  #
 # Each configuration is a combination of possible values for   #
 # the nodes. A node can be susceptible (0) or infected (1).    #
@@ -23,7 +22,6 @@ def get_clique(N):
 # Suppose we have N = 3. That means each configuration has     #
 # 3 bits. Configuration 2 equals 010, which means nodes zero   #
 # and two are susceptible, while node one is infected.         #
-################################################################
 def get_configuration_vector(N, i):
   x = np.zeros([N, 1], dtype=np.int_)
 
@@ -34,9 +32,9 @@ def get_configuration_vector(N, i):
   return x
 
 
-# Since pi is a vector of probabilities that should cover all
-# possible scenarios with no overlapping, the sum of its
-# elements has to be 1.
+# Since pi is a vector of probabilities that should cover all  #
+# possible scenarios with no overlapping, the sum of its       #
+# elements has to be 1.                                        #
 def sanity_check_pi(pi):
   sum = 0
   for i in pi:
