@@ -34,6 +34,34 @@ def get_configuration_vector(N, i):
   return x
 
 
+# Since pi is a vector of probabilities that should cover all
+# possible scenarios with no overlapping, the sum of its
+# elements has to be 1.
+def sanity_check_pi(pi):
+  sum = 0
+  for i in pi:
+    sum = i + sum
+  
+  # Weird floating point precision
+  if(sum < 0.995 or sum > 1.005):
+    print("Something went wrong.")
+    print("Sum of pi elements is not 1.0, but rather ", sum)
+  
+  return
+
+
+def get_expected_infected(pi, n_infected):
+  "Returns the expected value of the number of infected nodes."
+  expected_infected = 0
+
+  # Definition of expected value: sum of all possible values *
+  # their probability.
+  for i in range(0, n_infected.size):
+    expected_infected = expected_infected + pi[i]*n_infected[i]
+
+  return expected_infected
+
+
 def main():
   # TODO(jullytta): the following should become parameters
   # The population size.
@@ -48,7 +76,7 @@ def main():
   # The number of different configurations our system
   # can assume. Each node can be either susceptible (0)
   # or infected (1), so there are 2^N possible settings.
-  n_configs = pow(N, 2)
+  n_configs = pow(N, 2)-1
 
   # Adjacency matrix
   # We will start working with cliques only
@@ -71,6 +99,7 @@ def main():
   Z = 0
   # i is the current configuration
   for i in range(0, n_configs):
+    print("iteration ", i)
     x = get_configuration_vector(N, i)
     x_t = np.transpose(x)
 
@@ -90,13 +119,17 @@ def main():
     print("# of infected nodes: ", n_infected[i])
     print("# of infected edges: ", n_infected_edges)
 
+  # Normalize pi
   pi = pi/Z
 
+  sanity_check_pi(pi)
+  
   # Print stats
   print("# of nodes: ", N)
   print("# of configurations: ", n_configs)
   print("Z: ", Z)
   print("Final pi: ", pi)
+  print("Expected # of infected nodes: ", get_expected_infected(pi, n_infected))
 
 
 if __name__ == '__main__':
