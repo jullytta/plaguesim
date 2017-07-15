@@ -50,6 +50,33 @@ def sanity_check_pi(pi):
   return
 
 
+def calculate_pi_and_n_infected(A, N, pi, n_infected, lambda_, mu, gamma):
+  # Transposed vector of ones
+  one_t = np.ones([1, N], dtype=np.int_)
+
+  # Z is the sum of all partial pi
+  # In the end, pi has to be divided by Z to ensure all values
+  # lie between 0 and 1 - they are probabilities
+  Z = 0
+  # i is the current configuration
+  for i in range(0, n_infected.size):
+    x = get_configuration_vector(N, i)
+    x_t = np.transpose(x)
+
+    # Number of infected nodes in this configuration
+    n_infected[i] = np.matmul(one_t, x)[0, 0]
+
+    # Number of edges where both ends are infected
+    n_infected_edges = np.matmul(np.matmul(x_t, A), x)[0, 0]//2
+
+    # Partial pi
+    pi[i] = pow((lambda_/mu), n_infected[i])*pow(gamma, n_infected_edges)
+
+    Z = Z + pi[i]
+
+  return Z
+
+
 def get_expected_infected(pi, n_infected):
   "Returns the expected value of the number of infected nodes."
   expected_infected = 0
@@ -90,44 +117,18 @@ def main():
   # at configuration i
   n_infected = np.zeros([n_configs], dtype=np.int_)
 
-  # Transposed vector of ones
-  one_t = np.ones([1, N], dtype=np.int_)
-
   # Z is the sum of all partial pi
-  # In the end, pi has to be divided by Z to ensure all values
-  # lie between 0 and 1 - they are probabilities
-  Z = 0
-  # i is the current configuration
-  for i in range(0, n_configs):
-    x = get_configuration_vector(N, i)
-    x_t = np.transpose(x)
-
-    # Number of infected nodes in this configuration
-    n_infected[i] = np.matmul(one_t, x)[0, 0]
-
-    # Number of edges where both ends are infected
-    n_infected_edges = np.matmul(np.matmul(x_t, A), x)[0, 0]//2
-
-    # Partial pi
-    pi[i] = pow((lambda_/mu), n_infected[i])*pow(gamma, n_infected_edges)
-
-    Z = Z + pi[i]
-
-    #print("Current configuration: ", x_t)
-    #print("Partial pi: ", pi[i])
-    #print("# of infected nodes: ", n_infected[i])
-    #print("# of infected edges: ", n_infected_edges)
-
+  Z = calculate_pi_and_n_infected(A, N, pi, n_infected, lambda_, mu, gamma)
+  
   # Normalize pi
   pi = pi/Z
 
+  # Check if the sum of all pi[i] equals 1
   sanity_check_pi(pi)
   
   # Print stats
   print("# of nodes: ", N)
   print("# of configurations: ", n_configs)
-  #print("Z: ", Z)
-  #print("Final pi: ", pi)
   print("# of infected nodes (expected value): ", get_expected_infected(pi, n_infected))
 
 
