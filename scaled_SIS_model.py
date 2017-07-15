@@ -134,7 +134,7 @@ def main():
   
   # Print stats
   print("# of nodes: ", N)
-  print("# of configurations: ", n_configs)
+  print("# of configurations: ", n_configs+1)
   print("# of infected nodes (expected value): ", get_expected_infected(pi, n_infected))
 
 
