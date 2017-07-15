@@ -65,29 +65,38 @@ def main():
   # Transposed vector of ones
   one_t = np.ones([1, N], dtype=np.int_)
 
-  # TODO(jullytta): This is where the for loop should start
-  # Even better, make it into a function
-  # Current configuration
-  i = 4
+  # Z is the sum of all partial pi
+  # In the end, pi has to be divided by Z to ensure all values
+  # lie between 0 and 1 - they are probabilities
+  Z = 0
+  # i is the current configuration
+  for i in range(0, n_configs):
+    x = get_configuration_vector(N, i)
+    x_t = np.transpose(x)
 
-  x = get_configuration_vector(N, i)
-  x_t = np.transpose(x)
+    # Number of infected nodes in this configuration
+    n_infected[i] = np.matmul(one_t, x)[0, 0]
 
-  # Number of infected nodes in this configuration
-  n_infected[i] = np.matmul(one_t, x)[0, 0]
+    # Number of edges where both ends are infected
+    n_infected_edges = np.matmul(np.matmul(x_t, A), x)[0, 0]//2
 
-  # Number of edges where both ends are infected
-  n_infected_edges = np.matmul(np.matmul(x_t, A), x)[0, 0]//2
+    # Partial pi
+    pi[i] = pow((lambda_/mu), n_infected[i])*pow(gamma, n_infected_edges)
 
-  pi[i] = pow((lambda_/mu), n_infected[i])*pow(gamma, n_infected_edges)
+    Z = Z + pi[i]
+
+    print("Current configuration: ", x_t)
+    print("Partial pi: ", pi[i])
+    print("# of infected nodes: ", n_infected[i])
+    print("# of infected edges: ", n_infected_edges)
+
+  pi = pi/Z
 
   # Print stats
   print("# of nodes: ", N)
   print("# of configurations: ", n_configs)
-  print("Current configuration: ", x_t)
-  print("Partial pi: ", pi[i])
-  print("# of infected nodes: ", n_infected[i])
-  print("# of infected edges: ", n_infected_edges)
+  print("Z: ", Z)
+  print("Final pi: ", pi)
 
 
 if __name__ == '__main__':
