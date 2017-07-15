@@ -99,7 +99,6 @@ def main():
   Z = 0
   # i is the current configuration
   for i in range(0, n_configs):
-    print("iteration ", i)
     x = get_configuration_vector(N, i)
     x_t = np.transpose(x)
 
@@ -114,10 +113,10 @@ def main():
 
     Z = Z + pi[i]
 
-    print("Current configuration: ", x_t)
-    print("Partial pi: ", pi[i])
-    print("# of infected nodes: ", n_infected[i])
-    print("# of infected edges: ", n_infected_edges)
+    #print("Current configuration: ", x_t)
+    #print("Partial pi: ", pi[i])
+    #print("# of infected nodes: ", n_infected[i])
+    #print("# of infected edges: ", n_infected_edges)
 
   # Normalize pi
   pi = pi/Z
@@ -127,9 +126,9 @@ def main():
   # Print stats
   print("# of nodes: ", N)
   print("# of configurations: ", n_configs)
-  print("Z: ", Z)
-  print("Final pi: ", pi)
-  print("Expected # of infected nodes: ", get_expected_infected(pi, n_infected))
+  #print("Z: ", Z)
+  #print("Final pi: ", pi)
+  print("# of infected nodes (expected value): ", get_expected_infected(pi, n_infected))
 
 
 if __name__ == '__main__':
