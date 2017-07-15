@@ -72,7 +72,12 @@ def calculate_pi_and_n_infected(A, N, pi, n_infected, lambda_, mu, gamma):
 
     Z = Z + pi[i]
 
-  return Z
+  pi = pi/Z
+
+  # Note that the reference can't be changed inside the function,
+  # so we must return it and reassign.
+  # Python sucks.
+  return pi
 
 
 def get_expected_infected(pi, n_infected):
@@ -115,11 +120,14 @@ def main():
   # at configuration i
   n_infected = np.zeros([n_configs], dtype=np.int_)
 
-  # Z is the sum of all partial pi
-  Z = calculate_pi_and_n_infected(A, N, pi, n_infected, lambda_, mu, gamma)
-  
-  # Normalize pi
-  pi = pi/Z
+  # We will need the number of infected nodes for each
+  # configuration later on to calculate the expected value of
+  # the number of infected nodes.
+  # This information is also needed to calculate pi, so we might
+  # as well get these values from the following function instead
+  # of recalculating them.
+  # tl;dr: n_infected will be updated for later use
+  pi = calculate_pi_and_n_infected(A, N, pi, n_infected, lambda_, mu, gamma)
 
   # Check if the sum of all pi[i] equals 1
   sanity_check_pi(pi)
