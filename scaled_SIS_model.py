@@ -122,7 +122,7 @@ def main():
     # Graph type
     graph_type = get_graph_type(int(params[7]))
     # Output file
-    out_file = 'model_' + params[8].rstrip()
+    out_file_name = 'model_' + params[8].rstrip()
 
   # Print the parameters for double checking
   print("Please check the following parameters.")
@@ -133,12 +133,15 @@ def main():
   print("Maximum Population =", max_pop)
   print("Increment =", increment)
   print("Graph Type =", graph_type)
-  print("Output File =", out_file)
+  print("Output File =", out_file_name)
 
   print()
   
   print("Starting computation...")
   print("This might take a while.")
+
+  out_file = open(out_file_name, 'w')
+  out_file.write(str(gamma)+'\n')
 
   # Calculates the expected value of infected nodes for
   # each size of population.
@@ -182,11 +185,18 @@ def main():
     # Check if the sum of all pi[i] equals 1
     sanity_check_pi(pi)
     
+    e_infected = get_expected_infected(pi, n_infected)
+    p_infected = e_infected/N
+
+    out_file.write(str(N)+' '+str(p_infected)+'\n')
+
     # Print stats
     print("Finished population", N)
     print("# of nodes: ", N)
     print("# of configurations: ", n_configs)
-    print("# of infected nodes (expected value): ", get_expected_infected(pi, n_infected))
+    print("# of infected nodes (expected value): ", )
+
+  out_file.close()
 
 if __name__ == '__main__':
   main()
