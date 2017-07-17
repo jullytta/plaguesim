@@ -91,7 +91,7 @@ struct Graph {
         }
     }
 
-    void printAdjacencyMatrix() {
+    /*void printAdjacencyMatrix() {
         for (unsigned int i = 0; i < node.size(); i++) {
             unsigned int cur = 0;
             for (unsigned int j = 0; j < node.size(); j++) {
@@ -105,7 +105,7 @@ struct Graph {
             }
             cout << endl;
         }
-    }
+    }*/
 
     Event findNextInfection(Data parameters) {
         Event infection(-1, 0);
