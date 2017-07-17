@@ -9,6 +9,7 @@
 #include <vector>
 
 #define MAX_ITERATIONS 500
+#define MAX_TIME 300.0
 
 using namespace std;
 
@@ -164,44 +165,52 @@ Data runUI(Data oldParam) {
 
         switch (option) {
             case 'E':
+            case 'e':
                 cout << "This is the rate that nodes infect each other." << endl;
                 cout << "Please set a new value for Endogenous Infection: ";
                 cin >> newParam.gamma;
                 break;
             case 'T':
+            case 't':
                 cout << "This is the total rate that nodes get infected." << endl;
                 cout << "Node infection rate will be this value divided by the population." << endl;
                 cout << "Please set a new value for the Exogenous Infection: ";
                 cin >> newParam.C;
                 break;
             case 'C':
+            case 'c':
                 cout << "This is the rate that nodes cure themselves from infection." << endl;
                 cout << "Please set a new value for Cure Rate: ";
                 cin >> newParam.mu;
                 break;
             case 'S':
+            case 's':
                 cout << "Starting Population is the smallest population size that will be simulated." << endl;
                 cout << "Please set a new value for the Starting Population: ";
                 cin >> newParam.minPop;
                 break;
             case 'M':
+            case 'm':
                 cout << "Maximum Population is the largest population size that will be simulated." << endl;
                 cout << "Please set a new value for the Maximum Population: ";
                 cin >> newParam.maxPop;
                 break;
             case 'I':
+            case 'i':
                 cout << "Increment will increase the population size until Maximum Population." << endl;
                 cout << "Smaller values of increment means a smoother graph, but take longer to simulate." << endl;
                 cout << "Please set a new Increment value: ";
                 cin >> newParam.increment;
                 break;
             case 'N':
+            case 'n':
                 cout << "Represents how many times a certain population size will be simulated." << endl;
                 cout << "Higher values have better accuracy, but take longer to simulate." << endl;
                 cout << "Please set a new Number of Simulations: ";
                 cin >> newParam.repeats;
                 break;
             case 'G':
+            case 'g':
                 cout << "[1]. Clique" << endl;
                 cout << "[2]. Star" << endl;
                 cout << "[3]. Circular" << endl; 
@@ -209,14 +218,17 @@ Data runUI(Data oldParam) {
                 cin >> newParam.type;
                 break;
             case 'O':
+            case 'o':
                 cout << "Please set where to save output for graph making: ";
                 cin >> newParam.outputFileName;
                 break;
             case 'R':
+            case 'r':
                 cout << "The simulation will start now." << endl;
                 newParam.run = true;
                 break;
             case 'X':
+            case 'x':
                 cout << "Closing application..." << endl;
                 option = 'R';
                 break;
@@ -252,6 +264,7 @@ void runSimulation(Data parameters) {
             cout << "Running simulation " << curSim << " of " << totalSims << "..." << endl; 
 
             for (int count = 0; count < MAX_ITERATIONS; count++) {
+            //while (simulationTime < MAX_TIME) {
                 cout << fixed << setprecision(5);
                 Event nextInfection = graph.findNextInfection(parameters);
 
@@ -332,9 +345,9 @@ void runSimulation(Data parameters) {
 void readParameters(Data& parameters) {
     ifstream iParamFile;
 
-    iParamFile.open("parameters.txt");
+    iParamFile.open("parameters.cfg");
     if (iParamFile) {
-        iParamFile >> parameters.set;
+        parameters.set = 1;
         iParamFile >> parameters.gamma;
         iParamFile >> parameters.C;
         iParamFile >> parameters.mu;
@@ -351,8 +364,7 @@ void readParameters(Data& parameters) {
 void saveParameters(Data& parameters) {
     ofstream oParamFile;
 
-    oParamFile.open("parameters.txt");
-    oParamFile << 1 << endl;
+    oParamFile.open("parameters.cfg");
     oParamFile << parameters.gamma << endl;
     oParamFile << parameters.C << endl;
     oParamFile << parameters.mu << endl;
