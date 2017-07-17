@@ -60,9 +60,10 @@ struct Event {
 
 struct Edge {
     unsigned int dest;
+    int weight;
 
     Edge() {};
-    Edge(int d): dest(d) {};
+    Edge(int d, int w): dest(d), weight(w) {};
 };
 
 struct Node {
@@ -85,7 +86,7 @@ struct Graph {
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
                     if (i != j) {
-                        node[i].edge.push_back(Edge(j));
+                        node[i].edge.push_back(Edge(j, 1));
                     }
                 }
             }
@@ -146,7 +147,7 @@ Data runUI(Data oldParam) {
     newParam.set = true;
     newParam.run = false;
 
-    while (option != 'R') {
+    while (option != 'R' && option != 'r') {
         cout << "Welcome to PlagueSim. Please set your parameters before starting the simulation." << endl;
         cout << "[E]ndogenous Infection Rate = " << newParam.gamma << endl;
         cout << "[T]otal Exogenous Infection Rate = " << newParam.C << endl;
