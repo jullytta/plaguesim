@@ -17,9 +17,10 @@ mt19937 randomGen(seed);
 ofstream outputFile;
 
 struct Data {
-    bool set;
-    double gamma, mu, C;
     int minPop, maxPop, increment, repeats, type;
+    bool set, run;
+    double gamma, mu, C;
+    string outputFileName;
 
     Data() {
         set = false;
@@ -31,6 +32,7 @@ struct Data {
         increment = 5;
         repeats = 100;
         type = 1;
+        outputFileName = "dataout.csv";
     }
 
     string printGraphType() {
@@ -141,6 +143,7 @@ Data runUI(Data oldParam) {
         newParam = oldParam;
     }
     newParam.set = true;
+    newParam.run = false;
 
     while (option != 'R') {
         cout << "Welcome to PlagueSim. Please set your parameters before starting the simulation." << endl;
@@ -152,7 +155,9 @@ Data runUI(Data oldParam) {
         cout << "[I]ncrement = " << newParam.increment << endl;
         cout << "[N]umber of Simulations per Population Size = " << newParam.repeats << endl;
         cout << "[G]raph Type = " << newParam.printGraphType() << endl;
-        cout << "[R]un the Simulation" << endl << endl;
+        cout << "[O]utput File = " << newParam.outputFileName << endl;
+        cout << "[R]un the Simulation" << endl;
+        cout << "E[X]it PlagueSim." << endl << endl;
 
         cout << "Select an option: ";
         cin >> option;
@@ -196,15 +201,25 @@ Data runUI(Data oldParam) {
                 cout << "Please set a new Number of Simulations: ";
                 cin >> newParam.repeats;
                 break;
-            case 'R':
-                cout << "The simulation will start now." << endl;
-                break;
             case 'G':
                 cout << "[1]. Clique" << endl;
                 cout << "[2]. Star" << endl;
                 cout << "[3]. Circular" << endl; 
                 cout << "Please select a preset graph type for the simulation: ";
                 cin >> newParam.type;
+                break;
+            case 'O':
+                cout << "Please set where to save output for graph making: ";
+                cin >> newParam.outputFileName;
+                break;
+            case 'R':
+                cout << "The simulation will start now." << endl;
+                newParam.run = true;
+                break;
+            case 'X':
+                cout << "Closing application..." << endl;
+                option = 'R';
+                break;
             default:
                 cout << "Invalid command." << endl;
         }
@@ -248,7 +263,7 @@ void runSimulation(Data parameters) {
                         cures.push_back(Event(nextInfection.node, cureTime(randomGen)));
                         sort(cures.begin(), cures.end(), eventSort);
 
-                        cout << "(" << simulationTime << "t) Node " << nextInfection.node << " has been infected." << endl;
+                        //cout << "(" << simulationTime << "t) Node " << nextInfection.node << " has been infected." << endl;
                     }
                     else {
                         if (cures[0].eventTime > nextInfection.eventTime) {
@@ -261,12 +276,12 @@ void runSimulation(Data parameters) {
                             cures.push_back(Event(nextInfection.node, cureTime(randomGen)));
                             sort(cures.begin(), cures.end(), eventSort);
 
-                            cout << "(" << simulationTime << "t) Node " << nextInfection.node << " has been infected." << endl;
+                            //cout << "(" << simulationTime << "t) Node " << nextInfection.node << " has been infected." << endl;
                         }
                         else {
                             simulationTime += cures[0].eventTime;
 
-                            cout << "(" << simulationTime << "t) Node " << cures[0].node << " has been healed." << endl;
+                            //cout << "(" << simulationTime << "t) Node " << cures[0].node << " has been healed." << endl;
 
                             graph.node[cures[0].node].status = 0;
                             for (unsigned int i = 1; i < cures.size(); i++) {
@@ -278,6 +293,9 @@ void runSimulation(Data parameters) {
                 }
                 else {
                     simulationTime += cures[0].eventTime;
+
+                    //cout << "(" << simulationTime << "t) Node " << cures[0].node << " has been healed." << endl;
+
                     graph.node[cures[0].node].status = 0;
                     for (unsigned int i = 1; i < cures.size(); i++) {
                         cures[i].eventTime -= cures[0].eventTime;
@@ -285,12 +303,12 @@ void runSimulation(Data parameters) {
                     cures.erase(cures.begin());
                 }
 
-                cout << "------------------------" << endl;
+                /*cout << "------------------------" << endl;
                 cout << "Currently infected nodes:" << endl;
                 for (unsigned int i = 0; i < cures.size(); i++) {
                     cout << cures[i].node << " will be healed in " << cures[i].eventTime << "." << endl;
                 }
-                cout << "------------------------" << endl;
+                cout << "------------------------" << endl;*/
             }
 
             int numberOfInfected = 0;
@@ -311,32 +329,55 @@ void runSimulation(Data parameters) {
     }
 }
 
-int main (int argc, char** argv) {
+void readParameters(Data& parameters) {
+    ifstream iParamFile;
+
+    iParamFile.open("parameters.txt");
+    if (iParamFile) {
+        iParamFile >> parameters.set;
+        iParamFile >> parameters.gamma;
+        iParamFile >> parameters.C;
+        iParamFile >> parameters.mu;
+        iParamFile >> parameters.minPop;
+        iParamFile >> parameters.maxPop;
+        iParamFile >> parameters.increment;
+        iParamFile >> parameters.repeats;
+        iParamFile >> parameters.type;
+        iParamFile >> parameters.outputFileName;    
+    }
+    iParamFile.close();
+}
+
+void saveParameters(Data& parameters) {
+    ofstream oParamFile;
+
+    oParamFile.open("parameters.txt");
+    oParamFile << 1 << endl;
+    oParamFile << parameters.gamma << endl;
+    oParamFile << parameters.C << endl;
+    oParamFile << parameters.mu << endl;
+    oParamFile << parameters.minPop << endl;
+    oParamFile << parameters.maxPop << endl;
+    oParamFile << parameters.increment << endl;
+    oParamFile << parameters.repeats << endl;
+    oParamFile << parameters.type << endl;
+    oParamFile << parameters.outputFileName << endl;
+    oParamFile.close();
+}
+
+int main () {
     Data parameters;
 
-    if (argc == 1) {
-        cout << "Please set an output file." << endl;
-        return 0;
-    }
-
-    outputFile.open(argv[1]);
-
-    if (argc == 9) {
-        parameters.set = true;
-        parameters.gamma = atof(argv[2]);
-        parameters.C = atof(argv[3]);
-        parameters.mu = atof(argv[4]);
-        parameters.minPop = atoi(argv[5]);
-        parameters.maxPop = atoi(argv[6]);
-        parameters.increment = atoi(argv[7]);
-        parameters.repeats = atoi(argv[8]);
-    }
-    
+    readParameters(parameters);
     parameters = runUI(parameters);
-    outputFile << parameters.gamma << endl;
-    runSimulation(parameters);
+    saveParameters(parameters);
 
-    outputFile.close();
+    if (parameters.run) {
+        outputFile.open(parameters.outputFileName);
+        outputFile << parameters.gamma << endl;
+        runSimulation(parameters);
+        outputFile.close();
+    }
 
     return 0;
 }
