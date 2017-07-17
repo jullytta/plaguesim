@@ -339,7 +339,7 @@ void runSimulation(Data parameters) {
         averageInfected /= parameters.repeats;
         cout << "Average number of infected for " << pop << " nodes is " << averageInfected << "." << endl;
         cout << "Probability of a node being infected is " << averageInfected/pop << endl;
-        outputFile << pop << " " << averageInfected/pop << endl;
+        outputFile << pop << " " << fixed << setprecision(5) << averageInfected/pop << endl;
     }
 }
 
