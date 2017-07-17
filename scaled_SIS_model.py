@@ -1,4 +1,5 @@
 import numpy as np
+import sys
 
 
 def get_clique(N):
@@ -71,7 +72,7 @@ def calculate_pi_and_n_infected(A, N, pi, n_infected, lambda_, mu, gamma):
     pi[i] = pow((lambda_/mu), n_infected[i])*pow(gamma, n_infected_edges)
 
     Z = Z + pi[i]
-
+  
   pi = pi/Z
 
   # Note that the reference can't be changed inside the function,
@@ -91,26 +92,35 @@ def get_expected_infected(pi, n_infected):
 
   return expected_infected
 
-
 def main():
+  #if(len(sys.argv) != 8):
+  #  print("Incorrect number of parameters. Usage:")
+  #  print("python3", sys.argv[0], "gamma c mu start end increment type")
+  #  return
+
   # TODO(jullytta): the following should become parameters
   # The population size.
-  N = 3
+  N = 15
   # The cure rate
   mu = 1
   # The exogenous infection rate
-  lambda_ = 1/N
+  lambda_ = 10/N
   # The endogenous infection rate
   gamma = 1
 
   # The number of different configurations our system
   # can assume. Each node can be either susceptible (0)
   # or infected (1), so there are 2^N possible settings.
-  n_configs = pow(N, 2)-1
+  n_configs = pow(2, N)
 
   # Adjacency matrix
   # We will start working with cliques only
+  #if(sys.argv[7] == "clique"):
   A = get_clique(N)
+  #else:
+  #  print("Sorry, the only type implemented right now is 'clique'.")
+  #  print("Try again later!")
+  #  return
 
   # pi[i] is the stationary distribution
   # i.e., the probability of seeing configuration i
@@ -134,7 +144,7 @@ def main():
   
   # Print stats
   print("# of nodes: ", N)
-  print("# of configurations: ", n_configs+1)
+  print("# of configurations: ", n_configs)
   print("# of infected nodes (expected value): ", get_expected_infected(pi, n_infected))
 
 
