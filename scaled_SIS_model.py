@@ -122,7 +122,7 @@ def main():
     # Graph type
     graph_type = get_graph_type(int(params[7]))
     # Output file
-    out_file = params[8].rstrip()
+    out_file = 'model_' + params[8].rstrip()
 
   # Print the parameters for double checking
   print("Please check the following parameters.")
@@ -135,54 +135,58 @@ def main():
   print("Graph Type =", graph_type)
   print("Output File =", out_file)
 
+  print()
+  
   print("Starting computation...")
   print("This might take a while.")
 
-  # Population size
-  N = start_pop
+  # Calculates the expected value of infected nodes for
+  # each size of population.
+  for N in range(start_pop, max_pop+1, increment):
+    print()
+    print("Running population", N)
 
-  # Exogenous infection rate
-  lambda_ = c/N
+    # Exogenous infection rate (for each node)
+    lambda_ = c/N
   
-  # The number of different configurations our system
-  # can assume. Each node can be either susceptible (0)
-  # or infected (1), so there are 2^N possible settings.
-  n_configs = pow(2, N)
+    # The number of different configurations our system
+    # can assume. Each node can be either susceptible (0)
+    # or infected (1), so there are 2^N possible settings.
+    n_configs = pow(2, N)
 
-  # Adjacency matrix
-  # We will start working with cliques only
-  #if(sys.argv[7] == "clique"):
-  A = get_clique(N)
-  #else:
-  #  print("Sorry, the only type implemented right now is 'clique'.")
-  #  print("Try again later!")
-  #  return
+    # Adjacency matrix
+    if(graph_type == 'Clique'):
+      A = get_clique(N)
+    else:
+      print("Sorry, this type of graph is currently not supported.")
+      print("Try again later!")
+      return
 
-  # pi[i] is the stationary distribution
-  # i.e., the probability of seeing configuration i
-  pi = np.zeros([n_configs], dtype=np.float_)
+    # pi[i] is the stationary distribution
+    # i.e., the probability of seeing configuration i
+    pi = np.zeros([n_configs], dtype=np.float_)
 
-  # n_infected[i] is the number of infected nodes
-  # at configuration i
-  n_infected = np.zeros([n_configs], dtype=np.int_)
+    # n_infected[i] is the number of infected nodes
+    # at configuration i
+    n_infected = np.zeros([n_configs], dtype=np.int_)
 
-  # We will need the number of infected nodes for each
-  # configuration later on to calculate the expected value of
-  # the number of infected nodes.
-  # This information is also needed to calculate pi, so we might
-  # as well get these values from the following function instead
-  # of recalculating them.
-  # tl;dr: n_infected will be updated for later use
-  pi = calculate_pi_and_n_infected(A, N, pi, n_infected, lambda_, mu, gamma)
+    # We will need the number of infected nodes for each
+    # configuration later on to calculate the expected value of
+    # the number of infected nodes.
+    # This information is also needed to calculate pi, so we might
+    # as well get these values from the following function instead
+    # of recalculating them.
+    # tl;dr: n_infected will be updated for later use
+    pi = calculate_pi_and_n_infected(A, N, pi, n_infected, lambda_, mu, gamma)
 
-  # Check if the sum of all pi[i] equals 1
-  sanity_check_pi(pi)
-  
-  # Print stats
-  print("# of nodes: ", N)
-  print("# of configurations: ", n_configs)
-  print("# of infected nodes (expected value): ", get_expected_infected(pi, n_infected))
-
+    # Check if the sum of all pi[i] equals 1
+    sanity_check_pi(pi)
+    
+    # Print stats
+    print("Finished population", N)
+    print("# of nodes: ", N)
+    print("# of configurations: ", n_configs)
+    print("# of infected nodes (expected value): ", get_expected_infected(pi, n_infected))
 
 if __name__ == '__main__':
   main()
