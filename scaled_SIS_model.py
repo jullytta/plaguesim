@@ -92,22 +92,58 @@ def get_expected_infected(pi, n_infected):
 
   return expected_infected
 
+
+def get_graph_type(n):
+  if n == 1:
+    return 'Clique'
+  if n == 2:
+    return 'Star'
+  if n == 3:
+    return 'Circular'
+  return 'Custom'
+
+
 def main():
-  #if(len(sys.argv) != 8):
-  #  print("Incorrect number of parameters. Usage:")
-  #  print("python3", sys.argv[0], "gamma c mu start end increment type")
-  #  return
+  # Reading configuration file
+  with open('parameters.cfg', 'r') as config_file:
+    params = config_file.readlines()
+    # Endogenous infection rate
+    gamma = float(params[0])
+    # Total exogenous infection rate
+    c = float(params[1])
+    # Cure rate
+    mu = float(params[2])
+    # Starting population
+    start_pop = int(params[3])
+    # Maximum population
+    max_pop = int(params[4])
+    # Increment
+    increment = int(params[5])
+    # Graph type
+    graph_type = get_graph_type(int(params[7]))
+    # Output file
+    out_file = params[8].rstrip()
 
-  # TODO(jullytta): the following should become parameters
-  # The population size.
-  N = 15
-  # The cure rate
-  mu = 1
-  # The exogenous infection rate
-  lambda_ = 10/N
-  # The endogenous infection rate
-  gamma = 1
+  # Print the parameters for double checking
+  print("Please check the following parameters.")
+  print("Endogenous Infection Rate =", gamma)
+  print("Total Exogenous Infection Rate =", c)
+  print("Cure Rate =", mu)
+  print("Starting Population =", start_pop)
+  print("Maximum Population =", max_pop)
+  print("Increment =", increment)
+  print("Graph Type =", graph_type)
+  print("Output File =", out_file)
 
+  print("Starting computation...")
+  print("This might take a while.")
+
+  # Population size
+  N = start_pop
+
+  # Exogenous infection rate
+  lambda_ = c/N
+  
   # The number of different configurations our system
   # can assume. Each node can be either susceptible (0)
   # or infected (1), so there are 2^N possible settings.
