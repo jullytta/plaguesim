@@ -262,17 +262,21 @@ void runSimulation(Data parameters) {
             double simulationTime = 0.0;
             vector<Event> cures;
 
-            cout << "\r" << "Running simulation " << curSim << " of " << totalSims << "..."; 
+            cout << "\r" << "Running simulation " << curSim << " of " << totalSims << "..." << flush; 
 
             //for (int count = 0; count < MAX_ITERATIONS * pop; count++) {
-            double maxTime = (1.0 * pop)/((parameters.C / pop) + parameters.gamma + parameters.mu);
-            while (simulationTime < maxTime * pop) {
+            //double maxTime = (1.0 * pop)/((parameters.C / pop) + parameters.gamma + parameters.mu);
+            double maxTime = MAX_TIME * pop;
+            while (simulationTime < maxTime) {
                 Event nextInfection = graph.findNextInfection(parameters);
 
                 if (nextInfection.node != -1) {
                     if (cures.size() == 0) {
-                        graph.node[nextInfection.node].status = 1;
                         simulationTime += nextInfection.eventTime;
+                        if (simulationTime > maxTime) {
+                            break;
+                        }
+                        graph.node[nextInfection.node].status = 1;
                         exponential_distribution<double> cureTime(parameters.mu);
                         cures.push_back(Event(nextInfection.node, cureTime(randomGen)));
                         sort(cures.begin(), cures.end(), eventSort);
@@ -281,8 +285,11 @@ void runSimulation(Data parameters) {
                     }
                     else {
                         if (cures[0].eventTime > nextInfection.eventTime) {
-                            graph.node[nextInfection.node].status = 1;
                             simulationTime += nextInfection.eventTime;
+                            if (simulationTime > maxTime) {
+                                break;
+                            }
+                            graph.node[nextInfection.node].status = 1;
                             for (unsigned int i = 0; i < cures.size(); i++) {
                                 cures[i].eventTime -= nextInfection.eventTime;
                             }
@@ -294,6 +301,9 @@ void runSimulation(Data parameters) {
                         }
                         else {
                             simulationTime += cures[0].eventTime;
+                            if (simulationTime > maxTime) {
+                                break;
+                            }
 
                             //cout << "(" << simulationTime << "t) Node " << cures[0].node << " has been healed." << endl;
 
@@ -307,6 +317,9 @@ void runSimulation(Data parameters) {
                 }
                 else {
                     simulationTime += cures[0].eventTime;
+                    if (simulationTime > maxTime) {
+                        break;
+                    }
 
                     //cout << "(" << simulationTime << "t) Node " << cures[0].node << " has been healed." << endl;
 
@@ -395,6 +408,7 @@ int main () {
         runSimulation(parameters);
         outputFile.close();
         parameters = runUI(parameters);
+        saveParameters(parameters);
     }
 
     return 0;
