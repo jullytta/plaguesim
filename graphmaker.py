@@ -48,12 +48,13 @@ def plotCurve(filename, color='b', smooth=True):
 
     plt.xlabel('probability of a tagged node is infected')
     plt.ylabel('number of nodes in the network')
-    plt.legend()
+    plt.legend(loc='best')
 
     # creates an axis object and remove borders
     ax = plt.gca()
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
+    ax.tick_params(labeltop='off', labelright='off')
 
     # adjust tick position and step
     ticks = np.arange(0, 1.1, 0.1) # y-axis go from 0 to 1 with step 0.1
