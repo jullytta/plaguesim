@@ -192,9 +192,10 @@ def main():
 
     # Print stats
     print("Finished population", N)
-    print("# of nodes: ", N)
-    print("# of configurations: ", n_configs)
-    print("# of infected nodes (expected value): ", e_infected)
+    print("Number of nodes:", N)
+    print("Number of configurations:", n_configs)
+    print("Expected value of infected:", e_infected)
+    print("Probability of being infected:", p_infected)
 
   out_file.close()
 
