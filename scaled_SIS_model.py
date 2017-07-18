@@ -194,7 +194,7 @@ def main():
     print("Finished population", N)
     print("# of nodes: ", N)
     print("# of configurations: ", n_configs)
-    print("# of infected nodes (expected value): ", )
+    print("# of infected nodes (expected value): ", e_infected)
 
   out_file.close()
 
