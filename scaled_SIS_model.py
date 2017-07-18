@@ -3,7 +3,7 @@ import sys
 
 
 def get_clique(N):
-  "Returns an adjacency matrix corresponding to a NxN clique."
+  'Returns an adjacency matrix corresponding to a NxN clique.'
   clique = np.ones([N, N], dtype=np.int_)
 
   for i in range(0, N):
@@ -43,8 +43,8 @@ def sanity_check_pi(pi):
   
   # Weird floating point precision
   if(sum < 0.995 or sum > 1.005):
-    print("Something went wrong.")
-    print("Sum of pi elements is not 1.0, but rather ", sum)
+    print('Something went wrong.')
+    print('Sum of pi elements is not 1.0, but rather ', sum)
   
   return
 
@@ -82,7 +82,7 @@ def calculate_pi_and_n_infected(A, N, pi, n_infected, lambda_, mu, gamma):
 
 
 def get_expected_infected(pi, n_infected):
-  "Returns the expected value of the number of infected nodes."
+  'Returns the expected value of the number of infected nodes.'
   expected_infected = 0
 
   # Definition of expected value: sum of all possible values *
@@ -125,20 +125,20 @@ def main():
     out_file_name = 'model_' + params[8].rstrip()
 
   # Print the parameters for double checking
-  print("Please check the following parameters.")
-  print("Endogenous Infection Rate =", gamma)
-  print("Total Exogenous Infection Rate =", c)
-  print("Cure Rate =", mu)
-  print("Starting Population =", start_pop)
-  print("Maximum Population =", max_pop)
-  print("Increment =", increment)
-  print("Graph Type =", graph_type)
-  print("Output File =", out_file_name)
+  print('Please check the following parameters.')
+  print('Endogenous Infection Rate =', gamma)
+  print('Total Exogenous Infection Rate =', c)
+  print('Cure Rate =', mu)
+  print('Starting Population =', start_pop)
+  print('Maximum Population =', max_pop)
+  print('Increment =', increment)
+  print('Graph Type =', graph_type)
+  print('Output File =', out_file_name)
 
   print()
   
-  print("Starting computation...")
-  print("This might take a while.")
+  print('Starting computation...')
+  print('This might take a while.')
 
   out_file = open(out_file_name, 'w')
   out_file.write(str(gamma)+'\n')
@@ -147,7 +147,7 @@ def main():
   # each size of population.
   for N in range(start_pop, max_pop+1, increment):
     print()
-    print("Running population", N)
+    print('Running population', N)
 
     # Exogenous infection rate (for each node)
     lambda_ = c/N
@@ -161,8 +161,8 @@ def main():
     if(graph_type == 'Clique'):
       A = get_clique(N)
     else:
-      print("Sorry, this type of graph is currently not supported.")
-      print("Try again later!")
+      print('Sorry, this type of graph is currently not supported.')
+      print('Try again later!')
       return
 
     # pi[i] is the stationary distribution
@@ -188,14 +188,14 @@ def main():
     e_infected = get_expected_infected(pi, n_infected)
     p_infected = e_infected/N
 
-    out_file.write(str(N)+' '+str(p_infected)+'\n')
+    out_file.write(str(N)+' '+'{0:.5f}'.format(p_infected)+'\n')
 
     # Print stats
-    print("Finished population", N)
-    print("Number of nodes:", N)
-    print("Number of configurations:", n_configs)
-    print("Expected value of infected:", e_infected)
-    print("Probability of being infected:", p_infected)
+    print('Finished population', N)
+    print('Number of nodes:', N)
+    print('Number of configurations:', n_configs)
+    print('Expected value of infected: {0:.5f}'.format(e_infected))
+    print('Probability of being infected: {0:.5f}'.format(p_infected))
 
   out_file.close()
 
