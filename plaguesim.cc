@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#define MAX_ITERATIONS 100
-#define MAX_TIME 10.0
+#define MAX_ITERATIONS 500
+#define MAX_TIME 300.0
 
 using namespace std;
 
@@ -262,11 +262,11 @@ void runSimulation(Data parameters) {
             double simulationTime = 0.0;
             vector<Event> cures;
 
-            cout << "\r" << "Running simulation " << curSim << " of " << totalSims << "..."; 
+            cout << "Running simulation " << curSim << " of " << totalSims << "..." << endl; 
 
-            //for (int count = 0; count < MAX_ITERATIONS * pop; count++) {
-            double maxTime = (1.0 * pop)/((parameters.C / pop) + parameters.gamma + parameters.mu);
-            while (simulationTime < maxTime * pop) {
+            for (int count = 0; count < MAX_ITERATIONS; count++) {
+            //while (simulationTime < MAX_TIME) {
+                cout << fixed << setprecision(5);
                 Event nextInfection = graph.findNextInfection(parameters);
 
                 if (nextInfection.node != -1) {
@@ -337,14 +337,10 @@ void runSimulation(Data parameters) {
         }
 
         averageInfected /= parameters.repeats;
-        //cout << "Average number of infected for " << pop << " nodes is " << averageInfected << "." << endl;
-        //cout << "Probability of a node being infected is " << averageInfected/pop << endl;
+        cout << "Average number of infected for " << pop << " nodes is " << averageInfected << "." << endl;
+        cout << "Probability of a node being infected is " << averageInfected/pop << endl;
         outputFile << pop << " " << fixed << setprecision(5) << averageInfected/pop << endl;
     }
-
-    cout << endl;
-    cout << "Simulation finished. All outputs saved at " << parameters.outputFileName << "." << endl;
-    cout << endl;
 }
 
 void readParameters(Data& parameters) {
@@ -389,12 +385,11 @@ int main () {
     parameters = runUI(parameters);
     saveParameters(parameters);
 
-    while (parameters.run) {
+    if (parameters.run) {
         outputFile.open(parameters.outputFileName);
         outputFile << parameters.gamma << endl;
         runSimulation(parameters);
         outputFile.close();
-        parameters = runUI(parameters);
     }
 
     return 0;
