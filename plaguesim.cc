@@ -80,16 +80,41 @@ struct Graph {
 
     Graph() {}
     Graph(int n, int type): node(vector<Node>(n)) {
+        for (int i = 0; i < n; i++) {
+            node[i] = Node(i, 0);
+        }
+
         if (type == 1) {
-            for (int i = 0; i < n; i++) {
-                node[i] = Node(i, 0);
-            }
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
                     if (i != j) {
                         node[i].edge.push_back(Edge(j, 1));
                     }
                 }
+            }
+        }
+        else if (type == 2) {
+            for (int i = 1; i < n; i++) {
+                node[0].edge.push_back(Edge(i, 1));
+            }
+            for (int i = 1; i < n; i++) {
+                node[i].edge.push_back(Edge(0, 1));
+            }
+        }
+        else if (type == 3) {
+            for (int i = 0; i < n; i++) {
+                int prevNode = i-1;
+                if (prevNode < 0) {
+                    prevNode += n;
+                }
+
+                int nextNode = i+1;
+                if (nextNode == n) {
+                    nextNode = 0;
+                }
+
+                node[i].edge.push_back(Edge(prevNode, 1));
+                node[i].edge.push_back(Edge(nextNode, 1));
             }
         }
     }
@@ -374,11 +399,11 @@ void runSimulation(Data parameters) {
         } while (curSim <= MIN_ITERATIONS || confidenceInterval / sampleMean > parameters.confidence);
         
         cout << endl;
-        /*cout << "Average number of infected for " << pop << " nodes is " << sampleMean << "." << endl;
+        cout << "Average number of infected for " << pop << " nodes is " << sampleMean << "." << endl;
         cout << "Probability of a node being infected is " << sampleMean/pop << endl;
         cout << "Confidence Interval is [" << sampleMean - confidenceInterval << ", " << sampleMean + confidenceInterval << "]" << endl;
         cout << "Confidence percentage is " << confidenceInterval / sampleMean << endl;
-        cout << endl;*/
+        cout << endl;
         outputFile << pop << " " << fixed << setprecision(5) << sampleMean/pop << endl;
     }
 
