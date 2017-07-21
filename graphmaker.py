@@ -44,7 +44,7 @@ def smoothCurve(x, y, degree=3):
 def plotCurve(filename, color='b', smooth=True):
     x_axis, y_axis, gamma = readFile(filename)
     if smooth: x, y = smoothCurve(x_axis, y_axis)
-    line, = plt.plot(x, y, label='γ={0:.6f}'.format(gamma), linewidth=0.7, color=color)
+    line, = plt.plot(x, y, label='$\gamma$={0:.6f}'.format(gamma), linewidth=0.7, color=color)
 
     plt.xlabel('probability of a tagged node is infected')
     plt.ylabel('number of nodes in the network')
