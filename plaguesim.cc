@@ -19,7 +19,7 @@ mt19937 randomGen(seed);
 ofstream outputFile;
 
 struct Data {
-    int minPop, maxPop, increment, type;
+    int minPop, maxPop, increment, type, mainParameter;
     bool set, run;
     double gamma, mu, C, confidence;
     string outputFileName;
@@ -34,6 +34,7 @@ struct Data {
         increment = 5;
         confidence = 0.1;
         type = 1;
+        mainParameter = 1;
         outputFileName = "dataout.csv";
     }
 
@@ -48,6 +49,19 @@ struct Data {
             return "Circular";
         }
         return "Custom";
+    }
+
+    string printMainParameter() {
+        if (mainParameter == 1) {
+            return "Gamma";
+        }
+        if (mainParameter == 2) {
+            return "Mu";
+        }
+        if (mainParameter == 3) {
+            return "C";
+        }
+        return "Error";
     }
 };
 
@@ -184,6 +198,7 @@ Data runUI(Data oldParam) {
         cout << "[C]onfidence Interval = " << newParam.confidence << endl;
         cout << "[G]raph Type = " << newParam.printGraphType() << endl;
         cout << "[O]utput File = " << newParam.outputFileName << endl;
+        cout << "Main [P]arameter = " << newParam.printMainParameter() << endl;
         cout << "[R]un the Simulation" << endl;
         cout << "E[X]it PlagueSim." << endl << endl;
 
@@ -247,6 +262,14 @@ Data runUI(Data oldParam) {
             case 'o':
                 cout << "Please set where to save output for graph making: ";
                 cin >> newParam.outputFileName;
+                break;
+            case 'P':
+            case 'p':
+                cout << "[1]. Endogenous Infection Rate" << endl;
+                cout << "[2]. Healing Rate" << endl;
+                cout << "[3]. Total Exogenous Infection Rate" << endl;
+                cout << "Please choose which parameter you are interested in: ";
+                cin >> newParam.mainParameter;
                 break;
             case 'R':
             case 'r':
@@ -402,7 +425,7 @@ void runSimulation(Data parameters) {
         cout << "Average number of infected for " << pop << " nodes is " << sampleMean << "." << endl;
         cout << "Probability of a node being infected is " << sampleMean/pop << endl;
         cout << "Confidence Interval is [" << sampleMean - confidenceInterval << ", " << sampleMean + confidenceInterval << "]" << endl;
-        cout << "Confidence percentage is " << confidenceInterval / sampleMean << endl;
+        //cout << "Confidence percentage is " << confidenceInterval / sampleMean << endl;
         cout << endl;
         outputFile << pop << " " << fixed << setprecision(5) << sampleMean/pop << endl;
     }
@@ -447,6 +470,20 @@ void saveParameters(Data& parameters) {
     oParamFile.close();
 }
 
+void writeMainParameter(Data parameters) {
+    outputFile << parameters.printMainParameter() << " ";
+    if (parameters.mainParameter == 1) {
+        outputFile << parameters.gamma;
+    }
+    else if (parameters.mainParameter == 2) {
+        outputFile << parameters.mu;
+    }
+    else if (parameters.mainParameter == 3) {
+        outputFile << parameters.C;
+    }
+    outputFile << endl;
+}
+
 int main () {
     Data parameters;
 
@@ -456,7 +493,7 @@ int main () {
 
     while (parameters.run) {
         outputFile.open(parameters.outputFileName);
-        outputFile << parameters.gamma << endl;
+        writeMainParameter(parameters);
         runSimulation(parameters);
         outputFile.close();
         parameters = runUI(parameters);
