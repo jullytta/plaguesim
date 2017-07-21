@@ -421,9 +421,11 @@ void runSimulation(Data parameters) {
             curSim++;
         } while (curSim <= MIN_ITERATIONS || confidenceInterval / sampleMean > parameters.confidence);
         
+        double infectedProbability = (sampleMean/pop) * 100;
+
         cout << endl;
         cout << "Average number of infected for " << pop << " nodes is " << sampleMean << "." << endl;
-        cout << "Probability of a node being infected is " << sampleMean/pop << endl;
+        cout << "Probability of a node being infected is " << infectedProbability << "%" << endl;
         cout << "Confidence Interval is [" << sampleMean - confidenceInterval << ", " << sampleMean + confidenceInterval << "]" << endl;
         //cout << "Confidence percentage is " << confidenceInterval / sampleMean << endl;
         cout << endl;
