@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#define MIN_ITERATIONS 30
 #define MAX_ITERATIONS 100
 #define MAX_TIME 10.0
 
@@ -18,20 +19,20 @@ mt19937 randomGen(seed);
 ofstream outputFile;
 
 struct Data {
-    int minPop, maxPop, increment, repeats, type;
+    int minPop, maxPop, increment, type;
     bool set, run;
-    double gamma, mu, C;
+    double gamma, mu, C, confidence;
     string outputFileName;
 
     Data() {
         set = false;
-        gamma = 1.0;
+        gamma = 1.1;
         mu = 1.0;
-        C = 1.0;
+        C = 10.0;
         minPop = 5;
-        maxPop = 30;
+        maxPop = 60;
         increment = 5;
-        repeats = 100;
+        confidence = 0.1;
         type = 1;
         outputFileName = "dataout.csv";
     }
@@ -151,11 +152,11 @@ Data runUI(Data oldParam) {
         cout << "Welcome to PlagueSim. Please set your parameters before starting the simulation." << endl;
         cout << "[E]ndogenous Infection Rate = " << newParam.gamma << endl;
         cout << "[T]otal Exogenous Infection Rate = " << newParam.C << endl;
-        cout << "[C]ure Rate = " << newParam.mu << endl;
+        cout << "[H]ealing Rate = " << newParam.mu << endl;
         cout << "[S]tarting Population = " << newParam.minPop << endl;
         cout << "[M]aximum Population = " << newParam.maxPop << endl;
         cout << "[I]ncrement = " << newParam.increment << endl;
-        cout << "[N]umber of Simulations per Population Size = " << newParam.repeats << endl;
+        cout << "[C]onfidence Interval = " << newParam.confidence << endl;
         cout << "[G]raph Type = " << newParam.printGraphType() << endl;
         cout << "[O]utput File = " << newParam.outputFileName << endl;
         cout << "[R]un the Simulation" << endl;
@@ -178,10 +179,10 @@ Data runUI(Data oldParam) {
                 cout << "Please set a new value for the Exogenous Infection: ";
                 cin >> newParam.C;
                 break;
-            case 'C':
-            case 'c':
-                cout << "This is the rate that nodes cure themselves from infection." << endl;
-                cout << "Please set a new value for Cure Rate: ";
+            case 'H':
+            case 'h':
+                cout << "This is the rate that nodes heal themselves from infection." << endl;
+                cout << "Please set a new value for the Healing Rate: ";
                 cin >> newParam.mu;
                 break;
             case 'S':
@@ -203,12 +204,11 @@ Data runUI(Data oldParam) {
                 cout << "Please set a new Increment value: ";
                 cin >> newParam.increment;
                 break;
-            case 'N':
-            case 'n':
-                cout << "Represents how many times a certain population size will be simulated." << endl;
-                cout << "Higher values have better accuracy, but take longer to simulate." << endl;
-                cout << "Please set a new Number of Simulations: ";
-                cin >> newParam.repeats;
+            case 'C':
+            case 'c':
+                cout << "Lower values have better accuracy, but take longer to simulate." << endl;
+                cout << "Please set a new Confidence Interval: ";
+                cin >> newParam.confidence;
                 break;
             case 'G':
             case 'g':
@@ -246,23 +246,43 @@ bool eventSort(Event a, Event b) {
     return (a.eventTime < b.eventTime);
 }
 
+double calculateSampleMean(vector<int> nInfected) {
+    double sampleMean = 0.0;
+
+    for (auto value : nInfected) {
+        sampleMean += value;
+    }
+    sampleMean /= nInfected.size();
+
+    return sampleMean;
+}
+
+double calculateSampleVariance(vector<int> nInfected, double sampleMean) {
+    double sampleVariance = 0.0;
+
+    for (auto value : nInfected) {
+        sampleVariance += pow((value - sampleMean), 2);
+    }
+    sampleVariance /= (nInfected.size() - 1);
+
+    return sampleVariance;
+}
+
 void runSimulation(Data parameters) {
-    int curSim, totalSims;
     Graph graph;
     vector<Event> cureList;
 
-    curSim = 1;
-    totalSims = ((parameters.maxPop - parameters.minPop)/parameters.increment + 1) * parameters.repeats;
-    cout << "Preparing to run " << totalSims << " simulations..." << endl;
     for (int pop = parameters.minPop; pop <= parameters.maxPop; pop += parameters.increment) {
-        double averageInfected = 0.0;
+        int curSim = 1;
+        double sampleMean, sampleVariance, confidenceInterval;
+        vector<int> nInfected;
 
-        for (int curRepeat = 0; curRepeat < parameters.repeats; curRepeat++) {
+        do {
             graph = Graph(pop, parameters.type);
             double simulationTime = 0.0;
             vector<Event> cures;
 
-            cout << "\r" << "Running simulation " << curSim << " of " << totalSims << "..." << flush; 
+            cout << "\r" << "Running simulation number " << curSim << " for population size " << pop << "..." << flush; 
 
             //for (int count = 0; count < MAX_ITERATIONS * pop; count++) {
             //double maxTime = (1.0 * pop)/((parameters.C / pop) + parameters.gamma + parameters.mu);
@@ -344,15 +364,22 @@ void runSimulation(Data parameters) {
                     numberOfInfected++;
                 }
             }
-            averageInfected += numberOfInfected;
+            nInfected.push_back(numberOfInfected);
+
+            sampleMean = calculateSampleMean(nInfected);
+            sampleVariance = calculateSampleVariance(nInfected, sampleMean);
+            confidenceInterval = (2 * 1.96 * sqrt(sampleVariance)) / (sqrt(nInfected.size()));
 
             curSim++;
-        }
-
-        averageInfected /= parameters.repeats;
-        //cout << "Average number of infected for " << pop << " nodes is " << averageInfected << "." << endl;
-        //cout << "Probability of a node being infected is " << averageInfected/pop << endl;
-        outputFile << pop << " " << fixed << setprecision(5) << averageInfected/pop << endl;
+        } while (curSim <= MIN_ITERATIONS || confidenceInterval / sampleMean > parameters.confidence);
+        
+        cout << endl;
+        /*cout << "Average number of infected for " << pop << " nodes is " << sampleMean << "." << endl;
+        cout << "Probability of a node being infected is " << sampleMean/pop << endl;
+        cout << "Confidence Interval is [" << sampleMean - confidenceInterval << ", " << sampleMean + confidenceInterval << "]" << endl;
+        cout << "Confidence percentage is " << confidenceInterval / sampleMean << endl;
+        cout << endl;*/
+        outputFile << pop << " " << fixed << setprecision(5) << sampleMean/pop << endl;
     }
 
     cout << endl;
@@ -372,7 +399,7 @@ void readParameters(Data& parameters) {
         iParamFile >> parameters.minPop;
         iParamFile >> parameters.maxPop;
         iParamFile >> parameters.increment;
-        iParamFile >> parameters.repeats;
+        iParamFile >> parameters.confidence;
         iParamFile >> parameters.type;
         iParamFile >> parameters.outputFileName;    
     }
@@ -389,7 +416,7 @@ void saveParameters(Data& parameters) {
     oParamFile << parameters.minPop << endl;
     oParamFile << parameters.maxPop << endl;
     oParamFile << parameters.increment << endl;
-    oParamFile << parameters.repeats << endl;
+    oParamFile << parameters.confidence << endl;
     oParamFile << parameters.type << endl;
     oParamFile << parameters.outputFileName << endl;
     oParamFile.close();
