@@ -161,8 +161,9 @@ def main():
     increment = int(params[5])
     # Graph type
     graph_type = get_graph_type(int(params[8]))
-    # Output file
+    # Output files
     out_file_name = 'model_' + params[11].rstrip()
+    out_validation_name = 'validation_' + params[11].rstrip()
     # Parameter to print
     print_parameter = int(params[12])
 
@@ -184,6 +185,9 @@ def main():
 
   out_file = open(out_file_name, 'w')
   out_file.write(get_parameter(print_parameter, gamma, mu, c)+'\n')
+
+  out_validation = open(out_validation_name, 'w')
+  out_validation.write(get_parameter(print_parameter, gamma, mu, c)+'\n')
 
   # Calculates the expected value of infected nodes for
   # each size of population.
@@ -235,6 +239,7 @@ def main():
     p_infected = e_infected/N
 
     out_file.write(str(N)+' '+'{0:.5f}'.format(p_infected)+'\n')
+    out_validation.write(str(N)+' '+'{0:.5f}'.format(e_infected)+'\n')
 
     # Print stats
     print('Finished population', N)
