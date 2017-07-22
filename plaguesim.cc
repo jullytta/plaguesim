@@ -178,7 +178,7 @@ struct Graph {
             if (node[curNode].status == 0) {
                 for (unsigned int neighbor = 0; neighbor < node[curNode].edge.size(); neighbor++) {
                     if (node[node[curNode].edge[neighbor].dest].status == 1) {
-                        ratio *= parameters.gamma;
+                        ratio *= parameters.gamma * node[curNode].edge[neighbot].weight;
                     }
                 }
 
