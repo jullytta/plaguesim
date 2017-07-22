@@ -544,7 +544,7 @@ void runSimulation(Data parameters) {
             #ifndef VALIDATION_FLAG
             outputFile << pop << " " << fixed << setprecision(5) << sampleMean/pop << endl;
             #else
-            outputFile << sampleMean-confidenceInterval << " " << sampleMean+confidenceInterval << endl;
+            outputFile << pop << " " << sampleMean-confidenceInterval << " " << sampleMean+confidenceInterval << endl;
             #endif
         }
         else {
