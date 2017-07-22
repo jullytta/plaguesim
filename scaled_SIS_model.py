@@ -14,6 +14,37 @@ def get_clique(N):
   return clique
 
 
+def get_star(N):
+  'Returns an adjacency matrix corresponding to a NxN star.'
+  star = np.zeros([N, N], dtype=np.int_)
+
+  for i in range(1, N):
+    star[i, 0] = 1
+
+  for j in range(1, N):
+    star[0, j] = 1
+
+  return star
+
+
+def get_circular(N):
+  'Returns an adjacency matrix corresponding to a NxN circular.'
+  circular = np.zeros([N, N], dtype=np.int_)
+
+  for i in range(0, N):
+    prevNode = i-1
+    if(prevNode < 0):
+      prevNode += N
+
+    nextNode = i+1
+    if(nextNode == N):
+      nextNode = 0
+
+    circular[i, prevNode] = 1
+    circular[i, nextNode] = 1
+
+  return circular
+
 # We define a configuration as a state the system can assume.  #
 # Each configuration is a combination of possible values for   #
 # the nodes. A node can be susceptible (0) or infected (1).    #
@@ -160,6 +191,10 @@ def main():
     # Adjacency matrix
     if(graph_type == 'Clique'):
       A = get_clique(N)
+    elif(graph_type == 'Star'):
+      A = get_star(N)
+    elif(graph_type == 'Circular'):
+      A = get_circular(N)
     else:
       print('Sorry, this type of graph is currently not supported.')
       print('Try again later!')
