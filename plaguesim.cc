@@ -20,11 +20,12 @@ ofstream outputFile;
 
 struct Data {
     int pop, minPop, maxPop, increment, type, mainParameter;
-    bool set, run;
+    bool set, run, hack;
     double gamma, mu, C, confidence;
     string inputFileName, outputFileName;
 
     Data() {
+        hack = false;
         set = false;
         gamma = 1.1;
         mu = 1.0;
@@ -236,6 +237,10 @@ Data runUI(Data oldParam) {
         cin >> option;
 
         switch (option) {
+            case '@':
+                cout << "YOU ARE HACK!" << endl;
+                newParam.hack = true;
+                break;
             case 'E':
             case 'e':
                 cout << "This is the rate that nodes infect each other." << endl;
@@ -378,6 +383,9 @@ void runSimulation(Data parameters) {
         if (parameters.type == 4) {
             pop = parameters.pop;
         }
+        if (parameters.hack) {
+            outputFile << "Population " << pop << endl;
+        }
 
         do {
             graph = Graph(pop, parameters);
@@ -458,6 +466,18 @@ void runSimulation(Data parameters) {
                     cout << cures[i].node << " will be healed in " << cures[i].eventTime << "." << endl;
                 }
                 cout << "------------------------" << endl;*/
+
+                if (parameters.hack) {
+                    int hackedInfected = 0;
+
+                    for (unsigned int i = 0; i < graph.node.size(); i++) {
+                        if (graph.node[i].status == 1) {
+                            hackedInfected++;
+                        }
+                    }
+
+                    outputFile << simulationTime << " " << hackedInfected << endl;
+                }
             }
 
             int numberOfInfected = 0;
@@ -473,17 +493,27 @@ void runSimulation(Data parameters) {
             confidenceInterval = (2 * 1.96 * sqrt(sampleVariance)) / (sqrt(nInfected.size()));
 
             curSim++;
+
+            if (parameters.hack) {
+                break;
+            }
+
         } while (curSim <= MIN_ITERATIONS || confidenceInterval / sampleMean > parameters.confidence);
         
         double infectedProbability = (sampleMean/pop) * 100;
 
-        cout << endl;
-        cout << "Average number of infected for " << pop << " nodes is " << sampleMean << "." << endl;
-        cout << "Probability of a node being infected is " << infectedProbability << "%" << endl;
-        cout << "Confidence Interval is [" << sampleMean - confidenceInterval << ", " << sampleMean + confidenceInterval << "]" << endl;
-        //cout << "Confidence percentage is " << confidenceInterval / sampleMean << endl;
-        cout << endl;
-        outputFile << pop << " " << fixed << setprecision(5) << sampleMean/pop << endl;
+        if (!parameters.hack) {
+            cout << endl;
+            cout << "Average number of infected for " << pop << " nodes is " << sampleMean << "." << endl;
+            cout << "Probability of a node being infected is " << infectedProbability << "%" << endl;
+            cout << "Confidence Interval is [" << sampleMean - confidenceInterval << ", " << sampleMean + confidenceInterval << "]" << endl;
+            //cout << "Confidence percentage is " << confidenceInterval / sampleMean << endl;
+            cout << endl;
+            outputFile << pop << " " << fixed << setprecision(5) << sampleMean/pop << endl;
+        }
+        else {
+            outputFile << endl;
+        }
 
         if (parameters.type == 4) {
             break;
@@ -557,7 +587,9 @@ int main () {
 
     while (parameters.run) {
         outputFile.open(parameters.outputFileName);
-        writeMainParameter(parameters);
+        if (!parameters.hack) {
+            writeMainParameter(parameters);
+        }
         runSimulation(parameters);
         outputFile.close();
         parameters = runUI(parameters);
