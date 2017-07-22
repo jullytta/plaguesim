@@ -19,7 +19,7 @@ mt19937 randomGen(seed);
 ofstream outputFile;
 
 struct Data {
-    int pop, minPop, maxPop, increment, type, mainParameter;
+    int pop, minPop, maxPop, increment, type, mainParameter, infectionType;
     bool set, run, hack;
     double gamma, mu, C, confidence;
     string inputFileName, outputFileName;
@@ -36,6 +36,7 @@ struct Data {
         increment = 5;
         confidence = 0.1;
         type = 1;
+        infectionType = 1;
         mainParameter = 1;
         outputFileName = "dataout.csv";
         inputFileName = "adj.matrix";
@@ -51,18 +52,31 @@ struct Data {
         else if (type == 3) {
             return "Circular";
         }
-        return "Custom";
+        else if (type == 4) {
+            return "Custom";
+        }
+        return "Error";
     }
 
     string printMainParameter() {
         if (mainParameter == 1) {
             return "Gamma";
         }
-        if (mainParameter == 2) {
+        else if (mainParameter == 2) {
             return "Mu";
         }
-        if (mainParameter == 3) {
+        else if (mainParameter == 3) {
             return "C";
+        }
+        return "Error";
+    }
+
+    string printInfectionType() {
+        if (infectionType == 1) {
+            return "Multiplicative";
+        }
+        else if (infectionType == 2) {
+            return "Additive";
         }
         return "Error";
     }
@@ -179,7 +193,12 @@ struct Graph {
             if (node[curNode].status == 0) {
                 for (unsigned int neighbor = 0; neighbor < node[curNode].edge.size(); neighbor++) {
                     if (node[node[curNode].edge[neighbor].dest].status == 1) {
-                        ratio *= parameters.gamma * node[curNode].edge[neighbor].weight;
+                        if (parameters.infectionType == 1) {
+                            ratio *= parameters.gamma * node[curNode].edge[neighbor].weight;
+                        }
+                        else if (parameters.infectionType == 2) {
+                            ratio += parameters.gamma * node[curNode].edge[neighbor].weight;
+                        }
                     }
                 }
 
@@ -226,9 +245,10 @@ Data runUI(Data oldParam) {
         }
         cout << endl << "SIMULATOR SETTINGS:" << endl;
         cout << "[G]raph Type = " << newParam.printGraphType() << endl;
+        cout << "In[F]ection Type = " << newParam.printInfectionType() << endl;
         cout << "[C]onfidence Interval = " << newParam.confidence << endl;
         cout << "[O]utput File = " << newParam.outputFileName << endl;
-        cout << "Main [P]arameter = " << newParam.printMainParameter() << endl;
+        cout << "[P]rint Parameter = " << newParam.printMainParameter() << endl;
         cout << endl << "ACTIONS:" << endl;
         cout << "[R]un the Simulation" << endl;
         cout << "E[X]it PlagueSim." << endl << endl;
@@ -299,8 +319,19 @@ Data runUI(Data oldParam) {
                 cout << "Please select a preset graph type for the simulation: ";
                 cin >> newParam.type;
                 if (newParam.type < 1 || newParam.type > 4) {
-                    cout << "Invalid Graph type. Setting to default type: Clique.";
+                    cout << "Invalid Graph type. Setting to default type: Clique." << endl;
                     newParam.type = 1;
+                }
+                break;
+            case 'F':
+            case 'f':
+                cout << "[1]. Multiplicative" << endl;
+                cout << "[2]. Additive" << endl;
+                cout << "Please select how endogenous infection will be modeled: ";
+                cin >> newParam.infectionType;
+                if (newParam.infectionType < 1 || newParam.infectionType > 2) {
+                    cout << "Invalid Infection type. Setting to default: Multiplicative." << endl;
+                    newParam.infectionType = 1;
                 }
                 break;
             case 'C':
@@ -537,11 +568,13 @@ void readParameters(Data& parameters) {
         iParamFile >> parameters.minPop;
         iParamFile >> parameters.maxPop;
         iParamFile >> parameters.increment;
-        iParamFile >> parameters.confidence;
-        iParamFile >> parameters.type;
-        iParamFile >> parameters.outputFileName;
-        iParamFile >> parameters.pop;
         iParamFile >> parameters.inputFileName; 
+        iParamFile >> parameters.pop;
+        iParamFile >> parameters.type;
+        iParamFile >> parameters.infectionType;
+        iParamFile >> parameters.confidence;
+        iParamFile >> parameters.outputFileName;
+        iParamFile >> parameters.mainParameter;
     }
     iParamFile.close();
 }
@@ -556,11 +589,13 @@ void saveParameters(Data& parameters) {
     oParamFile << parameters.minPop << endl;
     oParamFile << parameters.maxPop << endl;
     oParamFile << parameters.increment << endl;
-    oParamFile << parameters.confidence << endl;
-    oParamFile << parameters.type << endl;
-    oParamFile << parameters.outputFileName << endl;
-    oParamFile << parameters.pop << endl;
     oParamFile << parameters.inputFileName << endl;
+    oParamFile << parameters.pop << endl;
+    oParamFile << parameters.type << endl;
+    oParamFile << parameters.infectionType << endl;
+    oParamFile << parameters.confidence << endl;
+    oParamFile << parameters.outputFileName << endl;
+    oParamFile << parameters.mainParameter << endl;
     oParamFile.close();
 }
 
