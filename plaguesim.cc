@@ -540,7 +540,12 @@ void runSimulation(Data parameters) {
             cout << "Confidence Interval is [" << sampleMean - confidenceInterval << ", " << sampleMean + confidenceInterval << "]" << endl;
             //cout << "Confidence percentage is " << confidenceInterval / sampleMean << endl;
             cout << endl;
+
+            #ifndef VALIDATION_FLAG
             outputFile << pop << " " << fixed << setprecision(5) << sampleMean/pop << endl;
+            #else
+            outputFile << sampleMean-confidenceInterval << " " << sampleMean+confidenceInterval << endl;
+            #endif
         }
         else {
             outputFile << endl;
