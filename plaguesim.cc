@@ -19,16 +19,17 @@ mt19937 randomGen(seed);
 ofstream outputFile;
 
 struct Data {
-    int minPop, maxPop, increment, type, mainParameter;
+    int pop, minPop, maxPop, increment, type, mainParameter;
     bool set, run;
     double gamma, mu, C, confidence;
-    string outputFileName;
+    string inputFileName, outputFileName;
 
     Data() {
         set = false;
         gamma = 1.1;
         mu = 1.0;
         C = 10.0;
+        pop = 5;
         minPop = 5;
         maxPop = 60;
         increment = 5;
@@ -36,6 +37,7 @@ struct Data {
         type = 1;
         mainParameter = 1;
         outputFileName = "dataout.csv";
+        inputFileName = "adj.txt";
     }
 
     string printGraphType() {
@@ -188,17 +190,29 @@ Data runUI(Data oldParam) {
     newParam.run = false;
 
     while (option != 'R' && option != 'r') {
-        cout << "Welcome to PlagueSim. Please set your parameters before starting the simulation." << endl;
+        cout << "----------------------------" << endl;
+        cout << "|   Welcome to PlagueSim   |" << endl;
+        cout << "----------------------------" << endl;
+        cout << endl << "RATES:" << endl;
         cout << "[E]ndogenous Infection Rate = " << newParam.gamma << endl;
         cout << "[T]otal Exogenous Infection Rate = " << newParam.C << endl;
         cout << "[H]ealing Rate = " << newParam.mu << endl;
-        cout << "[S]tarting Population = " << newParam.minPop << endl;
-        cout << "[M]aximum Population = " << newParam.maxPop << endl;
-        cout << "[I]ncrement = " << newParam.increment << endl;
-        cout << "[C]onfidence Interval = " << newParam.confidence << endl;
+        cout << endl << "GRAPH SETTINGS:" << endl;
+        if (newParam.type != 4) {
+            cout << "[S]tarting Population = " << newParam.minPop << endl;
+            cout << "[M]aximum Population = " << newParam.maxPop << endl;
+            cout << "[I]ncrement = " << newParam.increment << endl;
+        }
+        else {
+            cout << "[A]djacency Matrix File = " << newParam.pop << endl;
+            cout << "Popu[L]ation = " << newParam.inputFileName << endl;
+        }
+        cout << endl << "SIMULATOR SETTINGS:" << endl;
         cout << "[G]raph Type = " << newParam.printGraphType() << endl;
+        cout << "[C]onfidence Interval = " << newParam.confidence << endl;
         cout << "[O]utput File = " << newParam.outputFileName << endl;
         cout << "Main [P]arameter = " << newParam.printMainParameter() << endl;
+        cout << endl << "ACTIONS:" << endl;
         cout << "[R]un the Simulation" << endl;
         cout << "E[X]it PlagueSim." << endl << endl;
 
@@ -244,19 +258,35 @@ Data runUI(Data oldParam) {
                 cout << "Please set a new Increment value: ";
                 cin >> newParam.increment;
                 break;
-            case 'C':
-            case 'c':
-                cout << "Lower values have better accuracy, but take longer to simulate." << endl;
-                cout << "Please set a new Confidence Interval: ";
-                cin >> newParam.confidence;
+            case 'A':
+            case 'a':
+                cout << "Please select the file containing the adjacency matrix for your graph." << endl;
+                cin >> newParam.inputFileName;
+                break;
+            case 'L':
+            case 'l':
+                cout << "Please select your population size." << endl;
+                cout << "Please note your adjacency matrix must fit the selected size." << endl;
+                cin >> newParam.pop;
                 break;
             case 'G':
             case 'g':
                 cout << "[1]. Clique" << endl;
                 cout << "[2]. Star" << endl;
                 cout << "[3]. Circular" << endl; 
+                cout << "[4]. Custom (requires adjacency matrix file)" << endl;
                 cout << "Please select a preset graph type for the simulation: ";
                 cin >> newParam.type;
+                if (newParam.type < 1 || newParam.type > 4) {
+                    cout << "Invalid Graph type. Setting to default type: Clique.";
+                    newParam.type = 1;
+                }
+                break;
+            case 'C':
+            case 'c':
+                cout << "Lower values have better accuracy, but take longer to simulate." << endl;
+                cout << "Please set a new Confidence Interval: ";
+                cin >> newParam.confidence;
                 break;
             case 'O':
             case 'o':
@@ -270,6 +300,10 @@ Data runUI(Data oldParam) {
                 cout << "[3]. Total Exogenous Infection Rate" << endl;
                 cout << "Please choose which parameter you are interested in: ";
                 cin >> newParam.mainParameter;
+                if (newParam.mainParameter < 1 || newParam.mainParameter > 3) {
+                    cout << "Invalid parameter. Setting to default: Endogenous Infection Rate" << endl;
+                    newParam.mainParameter = 1;
+                }
                 break;
             case 'R':
             case 'r':
@@ -451,7 +485,9 @@ void readParameters(Data& parameters) {
         iParamFile >> parameters.increment;
         iParamFile >> parameters.confidence;
         iParamFile >> parameters.type;
-        iParamFile >> parameters.outputFileName;    
+        iParamFile >> parameters.outputFileName;
+        iParamFile >> parameters.pop;
+        iParamFile >> parameters.inputFileName; 
     }
     iParamFile.close();
 }
@@ -469,6 +505,8 @@ void saveParameters(Data& parameters) {
     oParamFile << parameters.confidence << endl;
     oParamFile << parameters.type << endl;
     oParamFile << parameters.outputFileName << endl;
+    oParamFile << parameters.pop << endl;
+    oParamFile << parameters.inputFileName << endl;
     oParamFile.close();
 }
 
