@@ -124,6 +124,16 @@ def get_expected_infected(pi, n_infected):
   return expected_infected
 
 
+def get_parameter(n, gamma, mu, c):
+  if n == 1:
+    return 'Gamma ' + str(gamma)
+  if n == 2:
+    return 'Mu ' + str(mu)
+  if n == 3:
+    return 'C ' + str(c)
+  return 'Error'
+
+
 def get_graph_type(n):
   if n == 1:
     return 'Clique'
@@ -154,6 +164,8 @@ def main():
     graph_type = get_graph_type(int(params[8]))
     # Output file
     out_file_name = 'model_' + params[11].rstrip()
+    # Parameter to print
+    print_parameter = int(params[12])
 
   # Print the parameters for double checking
   print('Please check the following parameters.')
@@ -172,7 +184,7 @@ def main():
   print('This might take a while.')
 
   out_file = open(out_file_name, 'w')
-  out_file.write(str(gamma)+'\n')
+  out_file.write(get_parameter(print_parameter, gamma, mu, c)+'\n')
 
   # Calculates the expected value of infected nodes for
   # each size of population.
