@@ -120,9 +120,9 @@ def main():
     # Increment
     increment = int(params[5])
     # Graph type
-    graph_type = get_graph_type(int(params[7]))
+    graph_type = get_graph_type(int(params[8]))
     # Output file
-    out_file_name = 'model_' + params[8].rstrip()
+    out_file_name = 'model_' + params[11].rstrip()
 
   # Print the parameters for double checking
   print('Please check the following parameters.')
