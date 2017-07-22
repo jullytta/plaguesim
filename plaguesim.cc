@@ -37,7 +37,7 @@ struct Data {
         type = 1;
         mainParameter = 1;
         outputFileName = "dataout.csv";
-        inputFileName = "adj.txt";
+        inputFileName = "adj.matrix";
     }
 
     string printGraphType() {
