@@ -237,7 +237,7 @@ Data runUI(Data oldParam) {
         if (newParam.type != 4) {
             cout << "[S]tarting Population = " << newParam.minPop << endl;
             cout << "[M]aximum Population = " << newParam.maxPop << endl;
-            cout << "[I]ncrement = " << newParam.increment << endl;
+            cout << "[J]ump = " << newParam.increment << endl;
         }
         else {
             cout << "[A]djacency Matrix File = " << newParam.inputFileName << endl;
@@ -245,7 +245,7 @@ Data runUI(Data oldParam) {
         }
         cout << endl << "SIMULATOR SETTINGS:" << endl;
         cout << "[G]raph Type = " << newParam.printGraphType() << endl;
-        cout << "In[F]ection Type = " << newParam.printInfectionType() << endl;
+        cout << "[I]nfection Type = " << newParam.printInfectionType() << endl;
         cout << "[C]onfidence Interval = " << newParam.confidence << endl;
         cout << "[O]utput File = " << newParam.outputFileName << endl;
         cout << "[P]rint Parameter = " << newParam.printMainParameter() << endl;
@@ -292,8 +292,8 @@ Data runUI(Data oldParam) {
                 cout << "Please set a new value for the Maximum Population: ";
                 cin >> newParam.maxPop;
                 break;
-            case 'I':
-            case 'i':
+            case 'J':
+            case 'j':
                 cout << "Increment will increase the population size until Maximum Population." << endl;
                 cout << "Smaller values of increment means a smoother graph, but take longer to simulate." << endl;
                 cout << "Please set a new Increment value: ";
@@ -323,8 +323,8 @@ Data runUI(Data oldParam) {
                     newParam.type = 1;
                 }
                 break;
-            case 'F':
-            case 'f':
+            case 'I':
+            case 'i':
                 cout << "[1]. Multiplicative" << endl;
                 cout << "[2]. Additive" << endl;
                 cout << "Please select how endogenous infection will be modeled: ";
