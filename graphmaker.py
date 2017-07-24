@@ -1,11 +1,11 @@
 '''
-    To install numpy and matplotlib you can use pip (or anaconda). 
+    To install numpy and matplotlib you can use pip (or anaconda).
     Using pip is as simple as running the following commands:
 
     $ pip install numpy
     $ pip install matplotlib
 
-    If decide to use anaconda, you just have to replace pip with conda. 
+    If decide to use anaconda, you just have to replace pip with conda.
 '''
 import numpy as np
 import numpy.polynomial.polynomial as poly
@@ -15,7 +15,7 @@ from glob import glob
 from itertools import cycle
 
 # defining parameters
-ylabel        = 'probability of a tagged node is infected'
+ylabel        = 'probability of tagged node is infected'
 xlabel        = 'number of nodes in the network'
 xmin, xmax    = 0.0, 60.0
 ymin, ymax    = 0.0, 1.0
@@ -56,7 +56,7 @@ def smoothCurve(x, y):
 # plots a single curve per csv file with a defined color
 def plotCurve(filename, color='b'):
     x, y, rate_label, rate_value = readFile(filename)
-    if use_fitting: 
+    if use_fitting:
         x, y = smoothCurve(x, y)
     line, = plt.plot(x, y, label='$\{0}$={1:.6f}'.format(rate_label, rate_value), linewidth=0.7, color=color)
 
@@ -78,15 +78,15 @@ def plotCurve(filename, color='b'):
     ax.spines['right'].set_visible(False)
     ax.tick_params(labeltop='off', labelright='off')
 
-    # set x-axis from 0 to 60 and y-axis from 0 to 1  
-    plt.axis([xmin, xmax, ymin, ymax])  
+    # set x-axis from 0 to 60 and y-axis from 0 to 1
+    plt.axis([xmin, xmax, ymin, ymax])
 
 
 def main():
     files  = sorted(glob('*'+extension))
     # creates a circular list of colors in case there are more csv files than colors
     colors = [e.value for e in Color]
-    colors = cycle(colors) 
+    colors = cycle(colors)
     for file in files:
         plotCurve(file, next(colors))
     plt.savefig(save_plot_as, bbox_inches='tight')
