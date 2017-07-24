@@ -1,5 +1,4 @@
-dataout.csv
+*.csv
+*.png
 plaguesim
-model_dataout.csv
 parameters.cfg
-validation_dataout.csv
