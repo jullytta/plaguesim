@@ -52,7 +52,6 @@ def smoothCurve(x, y):
     coefs  = poly.polyfit(x, y, poly_degree)
     ynew   = poly.polyval(xnew, coefs)
     ynew[ynew > 1.0] = 1.0
-    print(ynew)
     return xnew, ynew
 
 # plots a single curve per csv file with a defined color
