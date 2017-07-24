@@ -301,13 +301,13 @@ Data runUI(Data oldParam) {
                 break;
             case 'A':
             case 'a':
-                cout << "Please select the file containing the adjacency matrix for your graph." << endl;
+                cout << "Please select the file containing the adjacency matrix for your graph: ";
                 cin >> newParam.inputFileName;
                 break;
             case 'L':
             case 'l':
-                cout << "Please select your population size." << endl;
-                cout << "Please note your adjacency matrix must fit the selected size." << endl;
+                cout << "Note your adjacency matrix must fit the selected size." << endl;
+                cout << "Please select your population size: ";
                 cin >> newParam.pop;
                 break;
             case 'G':
