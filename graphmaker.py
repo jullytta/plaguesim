@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 from enum import Enum
 from glob import glob
 from itertools import cycle
+from collections import defaultdict
 
 # defining parameters
 ylabel        = 'probability of tagged node is infected'
@@ -24,6 +25,33 @@ use_fitting   = True  # set this to False to plot the original data with not cur
 poly_degree   = 3
 save_plot_as  = 'plot.png'
 extension     = '.csv'
+greek_alphabet = {
+    'alpha'  : u'\u03B1' ,
+    'beta'   : u'\u03B2' ,
+    'gamma'  : u'\u03B3' ,
+    'delta'  : u'\u03B4' ,
+    'epsilon': u'\u03B5' ,
+    'zeta'   : u'\u03B6' ,
+    'eta'    : u'\u03B7' ,
+    'theta'  : u'\u03B8' ,
+    'iota'   : u'\u03B9' ,
+    'kappa'  : u'\u03BA' ,
+    'lamda'  : u'\u03BB' ,
+    'mu'     : u'\u03BC' ,
+    'nu'     : u'\u03BD' ,
+    'xi'     : u'\u03BE' ,
+    'omicron': u'\u03BF' ,
+    'pi'     : u'\u03C0' ,
+    'rho'    : u'\u03C1' ,
+    'sigma'  : u'\u03C3' ,
+    'tau'    : u'\u03C4' ,
+    'upsilon': u'\u03C5' ,
+    'phi'    : u'\u03C6' ,
+    'chi'    : u'\u03C7' ,
+    'psi'    : u'\u03C8' ,
+    'omega'  : u'\u03C9' ,
+}
+greek_alphabet = defaultdict(lambda: 'c', greek_alphabet)
 
 class Color(Enum):
     BLUE      = '#0473bd'
@@ -59,7 +87,7 @@ def plotCurve(filename, color='b'):
     x, y, rate_label, rate_value = readFile(filename)
     if use_fitting:
         x, y = smoothCurve(x, y)
-    line, = plt.plot(x, y, label='$\{0}$={1:.6f}'.format(rate_label, rate_value), linewidth=0.7, color=color)
+    line, = plt.plot(x, y, label='{0}={1:.6f}'.format(greek_alphabet[rate_label] if greek_alphabet[rate_label] != 'c' else rate_label, rate_value), linewidth=0.7, color=color)
 
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
