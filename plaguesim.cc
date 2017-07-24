@@ -226,9 +226,9 @@ Data runUI(Data oldParam) {
     newParam.run = false;
 
     while (option != 'R' && option != 'r') {
-        cout << "----------------------------" << endl;
-        cout << "|   Welcome to PlagueSim   |" << endl;
-        cout << "----------------------------" << endl;
+        cout << "--------------------------------------" << endl;
+        cout << "|        Welcome to PlagueSim        |" << endl;
+        cout << "--------------------------------------" << endl;
         cout << endl << "RATES:" << endl;
         cout << "[E]ndogenous Infection Rate = " << newParam.gamma << endl;
         cout << "[T]otal Exogenous Infection Rate = " << newParam.C << endl;
