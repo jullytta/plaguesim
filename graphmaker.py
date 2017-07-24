@@ -15,7 +15,7 @@ from glob import glob
 from itertools import cycle
 
 # defining parameters
-ylabel        = 'probability of a tagged node is infected'
+ylabel        = 'probability of tagged node is infected'
 xlabel        = 'number of nodes in the network'
 xmin, xmax    = 0.0, 60.0
 ymin, ymax    = 0.0, 1.0
